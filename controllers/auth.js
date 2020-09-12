@@ -1,9 +1,9 @@
 const {connection}=require("../config/config")
 const jwt= require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { promisify } = require('util');
 
 exports.register = (req, res) => {
-    console.log(req.body);
     const { name, mobile, address, email, password, confirmPassword,  } = req.body;
     connection.query("SELECT email FROM staff WHERE email = ?", [email], async (error, result)=>{
         if(error){
@@ -43,8 +43,9 @@ exports.login = async (req, res) => {
             })
         }
          connection.query('SELECT * FROM staff WHERE email = ?', [email],async(error,results) => {
-             console.log(results)
-           if( !results || !(await bcrypt.compare(password, results[0].password))){
+           const isMatch = await bcrypt.compare(password, results[0].password);
+             // if( !results || !(await bcrypt.compare(password, results[0].password))){
+            if(!results || !isMatch ) {
                res.status(401).render('Login', {
                    message: "Email or Password is incorrect"
                })
@@ -53,7 +54,6 @@ exports.login = async (req, res) => {
                const token = jwt.sign({ id }, "rajendra666",{
                    expiresIn: "90d"
                });
-               console.log("token is = ",token);
 
                const cookieOptions = {
                    expires: new Date(
@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
                    httpOnly: true
                }
                res.cookie('jwt', token, cookieOptions)
-               res.status(200).redirect("/");
+               res.status(200).redirect("/index/search_hall");
            }
          })
     }catch (error){
@@ -70,3 +70,42 @@ exports.login = async (req, res) => {
     }
 
 }
+
+
+
+
+
+
+
+// Only for rendered pages, no errors!
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      // 1) verify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,"rajendra666"
+      );
+      // 2) Check if user still exists
+      connection.query('SELECT * FROM staff WHERE staff_id = ?', [decoded.id], (error, result) => {
+        if(!result) {
+          return next();
+        }
+        // THERE IS A LOGGED IN USER
+        req.user = result[0];
+        return next();
+      });
+    } catch (err) {
+      return next();
+    }
+  } else {
+    next();
+  }
+};
+
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).redirect("/");
+};

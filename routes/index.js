@@ -2,44 +2,34 @@ var express = require('express');
 const {connection}=require("../config/config")
 var router = express.Router();
 const now = new Date()
+const authController = require('../controllers/auth');
 
 /* GET home page. */
 router.post('/mainpage', function(req, res) {
 res.json({"Message": "Room successfully booked"});
-  // if(req.body.type === 1 || req.body.type === "1") {
-  //   connection.query("SELECT * FROM room", function (err, result, fields) {
-  //     if (err) throw err;
-  //     res.json(result);
-  //   });
-  // }
-
-  // if(req.body.type === 2 || req.body.type === "2") {
-  //   var sql = "UPDATE room SET free = 1 WHERE id = ?"
-  //   connection.query(sql, [req.body.roomid], function (err, result) {
-  //   if (err) throw err;
-  //   if(result.changedRows === 1){
-  //     res.json({"Message": "Room successfully booked"});
-  //   }
-  //   if(result.changedRows === 0){
-  //     res.json({"Message": "Sorry Room Already booked"});
-  //   }
-  //   });
-  // }
-
-  // if(req.body.type === 3 || req.body.type === "3") {
-  //   var sql = "UPDATE room SET free = 0 WHERE id = ?"
-  //   connection.query(sql, [req.body.roomid], function (err, result) {
-  //   if (err) throw err;
-  //
-  //   if(result.changedRows === 1){
-  //     res.json({"Message": "successfully cancelled booking"});
-  //   }
-  //   if(result.changedRows === 0){
-  //     res.json({"Message": "Already cancelled booking"});
-  //   }
-  //   });
-  // }
 })
+
+router.get('/search_hall', authController.isLoggedIn,(req, res) => {
+  if(req.user) {
+    res.render('search_hall', {
+      user: req.user,
+      title:"Booking System"
+    });
+  } else {
+    res.redirect("/login");
+  }
+});
+
+router.get('/book_hall', authController.isLoggedIn,(req, res) => {
+  if(req.user) {
+    res.render('book_hall', {
+      user: req.user,
+      title:"Booking System"
+    });
+  } else {
+    res.redirect("/login");
+  }
+});
 
 
 

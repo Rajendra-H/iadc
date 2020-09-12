@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+{{>headers}}
+<div class="container mt-4">
+    <div class="jumbotron">
+      <h1 class="display-4">Booking seminar and Auditorium hall project for IADC</h1>
+      <p class="lead">This is a simple project, a simple project for booking seminar and Auditorium halls for events or any activities.</p>
+      <hr class="my-4">
+      <p>We have used languages such as node.js (javascript), mysql and template engines to built this project </p>
+        {{#if user}}
+     <a class="btn btn-primary btn-lg" href="#" role="button">More info</a>
+      {{else}}
+            <a class="btn btn-primary btn-lg" href="#" role="button">More info</a>
+        <a style="color: brown; font-weight: bold" class="btn btn-group-sm" href="/login" role="button">Login</a>
+      {{/if}}
+</div>
+</div>
+{{>footer}}
+</body>
+</html>
