@@ -2,6 +2,73 @@
 <html>
 <head>
 	<title>{{title}}</title>
+<script>
+function myFunction() {
+              return document.getElementById("bookhallfor").style.display = "block";
+}
+
+function validateForm() {
+document.forms["myForm"]["fromtime"].style.borderColor = "green";
+document.forms["myForm"]["totime"].style.borderColor = "green";
+document.forms["myForm"]["hall"].style.borderColor = "green";
+if(document.forms["myForm"]["hall"].value === "0"){
+    document.forms["myForm"]["hall"].style.borderColor = "red";
+    alert("Invalid hall name")
+    return false;
+    }
+
+
+var fromtime = parseInt(document.forms["myForm"]["fromtime"].value.substring(0, 2));
+var totime = parseInt(document.forms["myForm"]["totime"].value.substring(0, 2));
+var fromtimeminute = parseInt(document.forms["myForm"]["fromtime"].value.substring(3, 5));
+var totimeminute = parseInt(document.forms["myForm"]["totime"].value.substring(3, 5));
+
+if((fromtime > totime || fromtime === totime && (fromtimeminute > totimeminute || fromtimeminute === totimeminute))){
+    alert("error1")
+    document.forms["myForm"]["fromtime"].style.borderColor = "red";
+     document.forms["myForm"]["totime"].style.borderColor = "red";
+     return false;
+}
+
+
+if((fromtime >= 9 && fromtime <=18) && (totime >= 9 && totime <= 18)){
+    document.forms["myForm"]["fromtime"].style.borderColor = "green";
+    document.forms["myForm"]["totime"].style.borderColor = "green";
+}else {
+    alert("error2")
+    document.forms["myForm"]["fromtime"].style.borderColor = "red";
+    document.forms["myForm"]["totime"].style.borderColor = "red";
+    return false;
+}
+
+if((fromtime >= 9 && fromtime <=18) && (totime >= 9 && totime <= 18)){
+    document.forms["myForm"]["fromtime"].style.borderColor = "green";
+    document.forms["myForm"]["totime"].style.borderColor = "green";
+}else {
+    alert("error3")
+    document.forms["myForm"]["fromtime"].style.borderColor = "red";
+    document.forms["myForm"]["totime"].style.borderColor = "red";
+    return false;
+}
+
+if(fromtime === totime && totimeminute-fromtimeminute <15){
+    alert("error4")
+    document.forms["myForm"]["fromtime"].style.borderColor = "red";
+    document.forms["myForm"]["totime"].style.borderColor = "red";
+    return false;
+}
+
+if((totime-fromtime === 1) && (60 - fromtimeminute + totimeminute < 15)){
+    alert("error5")
+    document.forms["myForm"]["fromtime"].style.borderColor = "red";
+    document.forms["myForm"]["totime"].style.borderColor = "red";
+    return false;
+}
+
+
+}
+</script>
+
 </head>
 <body>
 {{>headers}}
@@ -12,12 +79,6 @@
         </div>
         <div class="card-body">
         <form action="/search/hall" method="post">
-<!--            <div class="form-group row">-->
-<!--              <label for="example-datetime-local-input" class="col-2 col-form-label">Date and time</label>-->
-<!--              <div class="col-10">-->
-<!--                <input class="form-control" type="datetime-local" value="2011-08-19T13:45:00" id="example-datetime-local-input">-->
-<!--              </div>-->
-<!--            </div>-->
             <div class="form-group row">
               <label for="example-date-input" class="col-2 col-form-label">Date</label>
               <div class="col-10">
@@ -39,10 +100,10 @@
               </select>
                 </div>
             </div>
-
                 <button style="width: 100px" type="submit" class="btn btn-primary">Submit</button>
+
             {{#if booking_detils}}
-                <button style="width: 100px" class="btn btn-outline-dark" onclick="window.history.back();">Book</button>
+                <input type="button" style="width: 100px" class="btn btn-outline-dark" value="Book" onclick="myFunction()"/>
             {{/if}}
 
 
@@ -100,12 +161,12 @@
 
 
 
-    <div class="card">
+    <div class="card" id="bookhallfor"  style="display: none">
         <div class="card-header">
               Book the hall : For {{date}}
          </div>
         <div class="card-body">
-            <form action="/search/hall" method="post">
+            <form action="/search/bookhall" name="myForm" method="post" onsubmit="return validateForm()">
                 <div class="form-group row">
                 <label for="inputGroupSelect04" class="col-2 col-form-label">Hall Name</label>
                 <div class="col-10">
@@ -122,17 +183,39 @@
             </div>
 
 
+<!--            <div class="form-group row">-->
+<!--                  <label for="example-date-input" class="col-2 col-form-label">Date</label>-->
+<!--                  <div class="col-10" width="">-->
+<!--                    <input style="width: fit-content" class="form-control" type="date" value="2011-08-19" id="example-date-input">-->
+<!--                      <input style="width: fit-content" class="form-control" type="time" value="00:00:00" id="example-time-input">-->
+<!--                      <input style="width: fit-content" class="form-control" type="time" value="00:00:00" id="example-time-input">-->
+<!--                  </div>-->
+<!--            </div>-->
             <div class="form-group row">
-              <label for="example-datetime-local-input" class="col-2 col-form-label">Date and time</label>
-              <div class="col-10">
-                <input class="form-control" type="datetime-local" value="2011-08-19T13:45:00" id="example-datetime-local-input">
-              </div>
+                <label for="example-date-input" class="col-2 col-form-label">Date</label>
+                <div class="col-10">
+                  <div class="row">
+                    <div class="col-sm-3">
+                       <input style="width: fit-content" name="date" class="form-control" type="date" value="2011-08-19" id="example-date-input">
+                    </div>
+                    <div class="col-sm-2">
+                       <input style="width: fit-content" name="fromtime" class="form-control" type="time" value="09:00" id="example-time-input">
+<!--                         <input style="width: fit-content" name="fromtime" class="form-control" min="09:00" max="18:00" type="time" value="09:00" id="example-time-input">-->
+                    </div>
+                    <div class="col-sm">
+                      <input style="width: fit-content" name="totime" class="form-control" type="time" value="18:00" id="example-time-input1">
+<!--                        <input style="width: fit-content" name="totime" class="form-control" type="time" min="09:00" max="18:00" value="18:00" id="example-time-input1">-->
+                    </div>
+                  </div>
+                </div>
             </div>
-
+                <button style="width: 100px" type="submit" class="btn btn-primary">Submit</button>
             </form>
+             {{#if message1 }}
+                <h4 class="alert alert-danger mt-4">{{message1}}</h4>
+            {{/if}}
         </div>
     </div>
-
 
 
 

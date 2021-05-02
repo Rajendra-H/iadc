@@ -27,14 +27,19 @@
                              </li>
 
                         </ul>
-                        <form class="form-inline my-2 my-lg-0">
-                          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                        <form method="get" action="/search/booked_details1" class="form-inline my-2 my-lg-0">
+                          <input style="width: 230px" class="form-control mr-sm-2" name="book_id" type="number" placeholder="Do you have booking ID ?" aria-label="Search">
+                          <button class="btn btn-outline-success my-2 my-sm-0">Search</button>
                         </form>
                   </div>
             </nav>
         </div>
     </div>
+
+
+
+
+
 
     {{#if booking_detils}}
         <div class="card">
@@ -84,12 +89,16 @@
 
 
     {{#if booked_status}}
+      <div class="card">
+            <div class="card-header">
+                Booked History :
+            </div>
             <div class="card-body" >
                 {{#if booked_details_r}}
                     <table class="table table-striped">
                         <thead>
                           <tr>
-                            <th scope="col">S.l N0</th>
+                            <th scope="col">index</th>
                             <th scope="col">Booking Id</th>
                             <th scope="col">Venue</th>
                             <th scope="col">Date</th>
@@ -105,11 +114,12 @@
                                     <td scope="row">{{@index}}</td>
                                     <td>{{this.booking_id}}</td>
                                     <td>{{this.hall_name}}</td>
-                                    <td>{{this.dates}} : {{this.fromtime}} - {{this.totime}}</td>
+                                    <td>{{this.dates}}</td>
                                     <td>{{this.fromtime}} - {{this.totime}}</td>
                                     <td>{{this.class}}</td>
                                     <td>{{this.purpose}}</td>
                                     <td>{{this.booked_time}}</td>
+                                    <td><a href="/index/cancel/{{this.booking_id}}" class="btn btn-danger">Cancel</a></td>
                                 </tr>
                             </tbody>
                         {{/each}}
@@ -119,6 +129,7 @@
                      <h1 style="color: green; font-size: 17px;">{{booked_status}}</h1>
                    </div>
             </div>
+      </div>
     {{/if}}
 
 
@@ -129,18 +140,21 @@
 
 
         {{#if cancelled_status}}
+        <div class="card">
+            <div class="card-header">
+                Cancelled History :
+            </div>
             <div class="card-body" >
                 {{#if cancelled_details_r}}
                     <table class="table table-striped">
                         <thead>
                           <tr>
-                            <th scope="col">S.l N0</th>
+                            <th scope="col">Index</th>
                             <th scope="col">Booking Id</th>
                             <th scope="col">Venue</th>
                             <th scope="col">Date</th>
                             <th scope="col">Time</th>
                             <th scope="col">Class</th>
-                            <th scope="col">Cancelled Reason</th>
                             <th scope="col">Cancelled Time</th>
                           </tr>
                         </thead>
@@ -150,10 +164,9 @@
                                     <td scope="row">{{@index}}</td>
                                     <td>{{this.booking_id}}</td>
                                     <td>{{this.hall_name}}</td>
-                                    <td>{{this.dates}} : {{this.fromtime}} - {{this.totime}}</td>
+                                    <td>{{this.dates}}</td>
                                     <td>{{this.fromtime}} - {{this.totime}}</td>
                                     <td>{{this.class}}</td>
-                                    <td>{{this.cancel_reason}}</td>
                                     <td>{{this.cancelled_time}}</td>
                                 </tr>
                             </tbody>
@@ -161,9 +174,104 @@
                     </table>
                 {{/if}}
                    <div>
-                     <h1 style="color: green; font-size: 17px;">{{booked_status}}</h1>
+                     <h1 style="color: green; font-size: 17px;">{{cancelled_status}} {{user.staff_name}}..</h1>
                    </div>
             </div>
+        </div>
+    {{/if}}
+
+
+
+
+        {{#if booked_id_status_done}}
+        <div class="card">
+            <div class="card-header">
+                {{booked_id_status_done}} :
+            </div>
+            <div class="card-body" >
+                    <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th scope="col">Index</th>
+                            <th scope="col">Booking Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Dept</th>
+                            <th scope="col">Hall Name</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Class</th>
+                            <th scope="col">purpose</th>
+                            <th scope="col">Booked Time</th>
+                          </tr>
+                        </thead>
+                        {{#each booked_id_details}}
+                            <tbody>
+                                <tr>
+                                    <td scope="row">1</td>
+                                    <td>{{this.booking_id}}</td>
+                                    <td>{{this.staff_name}}</td>
+                                    <td>{{this.email}}</td>
+                                    <td>{{this.dept}}</td>
+                                    <td>{{this.hall_name}}</td>
+                                    <td>{{this.dates}}</td>
+                                    <td>{{this.fromtime}} - {{this.totime}}</td>
+                                    <td>{{this.class}}</td>
+                                    <td>{{this.purpose}}</td>
+                                    <td>{{this.booked_time}}</td>
+                                </tr>
+                            </tbody>
+                            {{/each}}
+                    </table>
+            </div>
+        </div>
+    {{/if}}
+
+
+            {{#if booked_id__status_cancelled}}
+        <div class="card">
+            <div class="card-header">
+                {{booked_id__status_cancelled}} :
+            </div>
+            <div class="card-body" >
+                    <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th scope="col">Index</th>
+                            <th scope="col">Booking Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Dept</th>
+                            <th scope="col">Hall Name</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Booked Time</th>
+                            <th scope="col">Cancelled Time</th>
+                            <th scope="col">Class</th>
+                            <th scope="col">Booked purpose</th>
+                          </tr>
+                        </thead>
+                        {{#each booked_id_details}}
+                            <tbody>
+                                <tr>
+                                    <td scope="row">1</td>
+                                    <td>{{this.booking_id}}</td>
+                                    <td>{{this.staff_name}}</td>
+                                    <td>{{this.email}}</td>
+                                    <td>{{this.dept}}</td>
+                                    <td>{{this.hall_name}}</td>
+                                    <td>{{this.dates}}</td>
+                                    <td>{{this.fromtime}} - {{this.totime}}</td>
+                                    <td>{{this.booked_time}}</td>
+                                    <td>{{this.cancelled_time}}</td>
+                                    <td>{{this.class}}</td>
+                                    <td>{{this.booked_purpose}}</td>
+                                </tr>
+                            </tbody>
+                            {{/each}}
+                    </table>
+            </div>
+        </div>
     {{/if}}
 
 

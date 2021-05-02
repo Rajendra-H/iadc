@@ -38,7 +38,7 @@ router.post('/book', function(req, res) {
     var ff=req.body.fromtime;
     var tt=req.body.totime;
     var staff_name=req.body.staff_name;
-    var phone = req.body.staff_phone;
+    var email = req.body.email;
     var dept=req.body.dept;
     var classname=req.body.class;
     var purpose = req.body.purpose;
@@ -47,8 +47,8 @@ router.post('/book', function(req, res) {
     connection.query(sql,[hallname,date,ff,tt,ff,ff,tt,tt], function (err, result) {
         if (err) throw err;
         if(result.length === 0){
-              var sql = "INSERT INTO `booking_details` (`booking_id`, `staff_name`, `staff_phone`, `dept`, `hall_name`, `dates`, `fromtime`, `totime`, `class`, `purpose`, `booked_time`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-              connection.query(sql,[staff_name,phone,dept,hallname,date,ff,tt,classname,purpose,Math.round(now.getTime())], function (err, result, fields) {
+              var sql = "INSERT INTO `booking_details` (`booking_id`, `staff_name`, `email`, `dept`, `hall_name`, `dates`, `fromtime`, `totime`, `class`, `purpose`, `booked_time`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+              connection.query(sql,[staff_name,email,dept,hallname,date,ff,tt,classname,purpose,Math.round(now.getTime())], function (err, result, fields) {
                   if (err) throw err;
                 res.json({Message : "Successfully booked man"});
               })
@@ -58,23 +58,42 @@ router.post('/book', function(req, res) {
     })
 })
 
-router.post('/cancel', function(req, res) {
+router.get('/cancel/:booking_id', function(req, res) {
+    const {booking_id} = req.params;
+
    var sql = "SELECT * FROM booking_details WHERE booking_id=?"
-    connection.query(sql,[req.body.booking_id], function (err, result) {
+    connection.query(sql,[booking_id], function (err, result) {
         if (err) throw err;
+
         if(result.length === 1){
                     var sql = "SELECT * FROM cancelled_details WHERE booking_id=?"
-                    connection.query(sql,[req.body.booking_id], function (err, cancel_result) {
+                    connection.query(sql,[booking_id], function (err, cancel_result) {
                         if(cancel_result.length === 0){
-                            var sql = "INSERT INTO `cancelled_details` (`cancelled_table_id`, `staff_name`, `staff_phone`, `dept`, `hall_name`, `dates`, `fromtime`, `totime`, `booked_time`, `cancelled_time`, `class`, `booked_purpose`, `cancel_reason`, `booking_id`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                              connection.query(sql,[result[0].staff_name,result[0].staff_phone,result[0].dept,result[0].hall_name,result[0].dates,result[0].fromtime,result[0].totime,result[0].booked_time,Math.round(now.getTime()),result[0].class,result[0].purpose,req.body.cancel_reason,result[0].booking_id], function (err, result, fields) {
+                            console.log(result[0].booked_time)
+                            var sql = "INSERT INTO `cancelled_details` (`cancelled_table_id`, `staff_name`,`email`, `dept`, `hall_name`, `dates`, `fromtime`, `totime`, `booked_time`, `cancelled_time`, `class`, `booked_purpose`, `booking_id`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+                              connection.query(sql,[result[0].staff_name,result[0].email,result[0].dept,result[0].hall_name,result[0].dates,result[0].fromtime,result[0].totime,result[0].booked_time,Math.round(now.getTime()),result[0].class,result[0].purpose,result[0].booking_id], function (err, result1, fields) {
                                   if (err) throw err;
-                                  if(result.affectedRows === 1) {
+                                  if(result1.affectedRows === 1) {
                                        var sql = "DELETE FROM `booking_details` WHERE `booking_details`.`booking_id` = ?"
-                                       connection.query(sql,[req.body.booking_id], function (err, deleted_result, fields) {
+                                       connection.query(sql,[booking_id], function (err, deleted_result, fields) {
                                         if (err) throw err;
                                         if(deleted_result.affectedRows === 1) {
-                                            res.json({Message: "Row Successfully deleted"});
+                                         var sql = "SELECT * FROM booking_details WHERE email = ?;"
+                                            connection.query(sql, [result[0].email], function (err, result2) {
+                                                if (err) throw err;
+                                                if (result2.length !== 0) {
+                                                    res.render('profile', {
+                                                        booked_details_r: result2,
+                                                        booked_status: "Success",
+                                                        user:req.user
+                                                    })
+                                                } else {
+                                                    res.render('profile', {
+                                                        booked_status: "Oops.. "+result[0].staff_name+" please book the hall please :) ",
+                                                        user:req.user
+                                                    })
+                                                }
+                                            })
                                         }else{
                                             res.json({Message: "Row inserted but nor deleted"});
                                         }
@@ -83,6 +102,7 @@ router.post('/cancel', function(req, res) {
                                       res.json({Message: "Sucessfully not inserted"});
                                   }
                               })
+
                         }else{
                              res.json({Message: "It's already deleted man"});
                         }

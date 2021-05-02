@@ -1,0 +1,46 @@
+    {{#if booked_id_status}}
+        <div class="card">
+            <div class="card-header">
+                {{booked_id_status}} :
+            </div>
+            <div class="card-body" >
+
+                {{#ifEquals booked_id_status "Booked Details"}}
+                    <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th scope="col">S.l N0</th>
+                            <th scope="col">Booking Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Dept</th>
+                            <th scope="col">Hall Name</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Class</th>
+                            <th scope="col">purpose</th>
+                            <th scope="col">Booked Time</th>
+                          </tr>
+                        </thead>
+                        {{#each booked_id_details}}
+                            <tbody>
+                                <tr>
+                                    <td scope="row">{{@index}}</td>
+                                    <td>{{this.booking_id}}</td>
+                                    <td>{{this.staff_name}}</td>
+                                    <td>{{this.email}}</td>
+                                    <td>{{this.dept}}</td>
+                                    <td>{{this.hall_name}}</td>
+                                    <td>{{this.dates}}</td>
+                                    <td>{{this.fromtime}} - {{this.totime}}</td>
+                                    <td>{{this.class}}</td>
+                                    <td>{{this.purpose}}</td>
+                                    <td>{{this.booked_time}}</td>
+                                </tr>
+                            </tbody>
+                        {{/each}}
+                    </table>
+                {{/ifEquals}}
+            </div>
+        </div>
+    {{/if}}
